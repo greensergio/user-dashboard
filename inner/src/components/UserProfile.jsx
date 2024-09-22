@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './UserProfile.scss'; 
 
-const UserProfile = ({ userId }) => {
+const UserProfile = ({ userId, setUserProfileImage }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,30 +12,32 @@ const UserProfile = ({ userId }) => {
       try {
         const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`);
         setUser(response.data);
+        const profileImageUrl = `https://robohash.org/${response.data.id}?set=set5`;
+        setUserProfileImage(profileImageUrl); 
       } catch (err) {
-        setError('Failed to fetch user data');
+        setError('Error fetching user data');
       } finally {
         setLoading(false);
       }
     };
-
     fetchUser();
-  }, [userId]);
+  }, [userId, setUserProfileImage]);
 
-  if (loading) {
-    return <div>Loading user...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <div>Loading user data...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <div className="user-profile">
-      <h2>User Profile</h2>
-      <p><strong>Name:</strong> {user.name}</p>
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>Phone:</strong> {user.phone}</p>
+    <div className="user-profile-card">
+      {user && (
+        <>
+          <img src={`https://robohash.org/${user.id}?set=set5`} alt="Profile" className="profile-image" />
+          <div className="profile-details">
+            <h2>{user.name}</h2>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Phone:</strong> {user.phone}</p>
+          </div>
+        </>
+      )}
     </div>
   );
 };

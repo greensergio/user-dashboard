@@ -1,38 +1,150 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 import './HomePage.scss';
 
+
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 const HomePage = () => {
-  const navigate = useNavigate();
+  const [friends, setFriends] = useState([]);
+  const [suggestedUsers, setSuggestedUsers] = useState([]);
+  const [posts, setPosts] = useState([]); 
+  const [allUsers, setAllUsers] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  useEffect(() => {
+    const fetchUsersAndPosts = async () => {
+      try {
+
+        const usersResponse = await axios.get('https://jsonplaceholder.typicode.com/users');
+        const users = usersResponse.data.slice(0, 6); 
+        setAllUsers(users); 
+        setFriends(users.slice(0, 3)); 
+        setSuggestedUsers(users.slice(3, 6)); 
+
+
+        const postsResponse = await axios.get('https://jsonplaceholder.typicode.com/posts');
+        const userPosts = postsResponse.data.filter(post => post.userId <= 6); 
+        
+ 
+        const shuffledPosts = shuffleArray(userPosts);
+        setPosts(shuffledPosts); 
+      } catch (err) {
+        setError('Error fetching data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsersAndPosts();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <div className='home-page'>
-    <div className="home-page-inner">
-      <h2>Welcome to the User Dashboard</h2>
-      <p>Here, you can explore user profiles and their activities, including posts and recent updates. Use the navigation menu to get started!</p>
-      
-      <div className="cta-section">
-        <button onClick={() => navigate('/users/1')}>View User 1</button>
-        <button onClick={() => navigate('/users/2')}>View User 2</button>
-        <button onClick={() => navigate('/users/3')}>View User 3</button>
-      </div>
-
-      <div className="highlights-section">
-        <h3>Featured Users</h3>
+    <div className="homepage">
+      {/* Left sidebar: Friends List */}
+      <div className="left-sidebar">
+        <h3>Friends</h3>
         <ul>
-          <li><Link to="/users/1">User 1 - Recent Activity: Posted 3 new articles</Link></li>
-          <li><Link to="/users/2">User 2 - Recent Activity: Commented on 5 posts</Link></li>
-          <li><Link to="/users/3">User 3 - Recent Activity: Liked 7 posts</Link></li>
+          {friends.length > 0 ? (
+            friends.map(friend => (
+              <li key={friend.id}>
+                <Link to={`/users/${friend.id}`}>
+                  <img 
+                    src={`https://robohash.org/${friend.id}?set=set5`} 
+                    alt="Profile" 
+                    className="profile-image-sidebar"
+                  />
+                  {friend.name}
+                </Link>
+              </li>
+            ))
+          ) : (
+            <li>No friends found</li>
+          )}
         </ul>
       </div>
 
-      <div className="dashboard-overview">
-        <h3>Dashboard Overview</h3>
-        <p>Total Users: 10</p>
-        <p>Total Posts: 35</p>
-        <p>Recent Comments: 15</p>
+      {/* Middle content: Welcome and For You section */}
+      <div className="main-content">
+        <div className='heading'>
+        <h2>Welcome to Your Dashboard</h2>
+        <p>Click on a friend to view their profile and activities.</p>
+        </div>
+        <h3>Suggested For You</h3>
+        <div className="for-you-section">
+          {posts.length > 0 ? (
+            posts.map(post => {
+              // Find the user who created the post by matching userId
+              const user = allUsers.find(u => u.id === post.userId); // Ensure we use only 6 users
+              return (
+                <div key={post.id} className="media-card">
+                  {/* Profile Picture and Name */}
+                  <div className="media-header">
+                    {user && (
+                      <>
+                        <Link to={`/users/${user.id}`}>
+                          <img
+                            src={`https://robohash.org/${user.id}?set=set5`}
+                            alt="Profile"
+                            className="profile-image"
+                          />
+                        </Link>
+                        <div className="user-info">
+                          <Link to={`/users/${user.id}`}>
+                            <h4>{user.name}</h4>
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Media Content */}
+                  <div className="media-content">
+                    <h4>{post.title}</h4>
+                    <p>{post.body}</p> 
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p>No posts available</p>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Right sidebar: Suggested Users */}
+      <div className="right-sidebar">
+        <h3>Suggested Users</h3>
+        <ul>
+          {suggestedUsers.length > 0 ? (
+            suggestedUsers.map(user => (
+              <li key={user.id}>
+                <Link to={`/users/${user.id}`}>
+                  <img 
+                    src={`https://robohash.org/${user.id}?set=set5`} 
+                    alt="Profile" 
+                    className="profile-image-sidebar"
+                  />
+                  {user.name}
+                </Link>
+              </li>
+            ))
+          ) : (
+            <li>No suggested users found</li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 };

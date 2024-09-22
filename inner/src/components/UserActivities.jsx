@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './UserActivities.scss'; // Include your styling
+import './UserActivities.scss'; 
 
-const UserActivities = ({ userId }) => {
+const UserActivities = ({ userId, profileImageUrl }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,37 +10,43 @@ const UserActivities = ({ userId }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`);
-        setPosts(response.data);
+        const postsResponse = await axios.get(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`);
+        setPosts(postsResponse.data);
       } catch (err) {
-        setError('Failed to fetch user activities');
+        setError('Error fetching media');
       } finally {
         setLoading(false);
       }
     };
-
     fetchPosts();
   }, [userId]);
 
-  if (loading) {
-    return <div>Loading activities...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <div>Loading media...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="user-activities">
-      <h2>User Activities</h2>
-      <ul>
-        {posts.map(post => (
-          <li key={post.id} className="activity-item">
-            <h3>{post.title}</h3>
-            <p>{post.body}</p>
-          </li>
-        ))}
-      </ul>
+      <h3>Media Shared by the User</h3>
+      {posts.length > 0 ? (
+        posts.map(post => (
+          <div key={post.id} className="media-card">
+            {/* Profile Picture and Name Section */}
+            <div className="media-header">
+              <img src={profileImageUrl} alt="Profile" className="profile-image" />
+              <div className="user-info">
+                <h4>{post.title}</h4> 
+              </div>
+            </div>
+
+            {/* Media Content */}
+            <div className="media-content">
+              <p>{post.body}</p> 
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>No media available</p>
+      )}
     </div>
   );
 };

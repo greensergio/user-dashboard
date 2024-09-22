@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Navbar.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-const Navbar = () => {
+const Navbar = ({ friends = [] }) => {  
   const [toggleDrawer, setToggleDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 550);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -20,13 +19,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Navigation links for different users
-  const navLinks = [
-    { name: 'User 1', path: '/users/1' },
-    { name: 'User 2', path: '/users/2' },
-    { name: 'User 3', path: '/users/3' },
-  ];
-
   return (
     <nav className='Navbar'>
       {/* Logo */}
@@ -35,17 +27,6 @@ const Navbar = () => {
           <h3>Dashboard</h3>
         </Link>
       </div>
-
-      {/* Desktop Links */}
-      {/* <div className='links'>
-        <ul className='text-links'>
-          {!isMobile && navLinks.map(link => (
-            <li key={link.name} className='link'>
-              <Link to={link.path}>{link.name}</Link>
-            </li>
-          ))}
-        </ul>
-      </div> */}
 
       {/* Small screen navigation */}
       {isMobile && (
@@ -56,15 +37,27 @@ const Navbar = () => {
             onClick={() => setToggleDrawer((prev) => !prev)}
           />
           <div className={`drawer ${toggleDrawer ? 'open' : 'close'}`}>
-            <ul className="mobile-links">
-              {navLinks.map(link => (
-                <li key={link.name} className="mobile-link">
-                  <Link to={link.path} onClick={() => setToggleDrawer(false)}>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {toggleDrawer && (
+              <>
+                {/* Friends title */}
+                <h4 className="mobile-friends-title">Friends</h4>
+
+                {/* List of friends */}
+                <ul className="mobile-links">
+                  {friends.length > 0 ? (
+                    friends.map(friend => (
+                      <li key={friend.id} className="mobile-link">
+                        <Link to={`/users/${friend.id}`} onClick={() => setToggleDrawer(false)}>
+                          {friend.name}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li>No friends found</li>
+                  )}
+                </ul>
+              </>
+            )}
           </div>
         </div>
       )}
