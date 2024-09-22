@@ -1,0 +1,26 @@
+.user-activities {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  
+    h2 {
+      margin-bottom: 15px;
+    }
+  
+    .activity-item {
+      margin-bottom: 20px;
+  
+      h3 {
+        margin: 0;
+        font-size: 1.2em;
+        color: #333;
+      }
+  
+      p {
+        margin-top: 5px;
+        color: #666;
+      }
+    }
+  }
+  

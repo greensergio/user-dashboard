@@ -1,0 +1,119 @@
+.Navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: fixed; 
+    top: 0;
+    width: 100%;
+    height: 70px; /* Adjust height if necessary */
+    z-index: 9999; /* Ensure the Navbar is above other elements */
+    background-color: black;
+    backdrop-filter: blur(8px);
+    transition: background-color 0.3s ease;
+  
+    /* Navbar logo */
+    .navbar-logo {
+      a {
+        text-decoration: none;
+        color: white;
+  
+        h1 {
+          margin: 0;
+          font-size: 24px;
+        }
+      }
+    }
+  
+    /* Links for desktop view */
+    .links {
+      display: flex;
+  
+      @media screen and (max-width: 1024px) {
+        display: none;
+      }
+  
+      .text-links {
+        display: flex;
+        list-style: none;
+  
+        .link {
+          margin: 1.3rem;
+          font-size: 16px;
+  
+          a {
+            color: white;
+            text-decoration: none;
+            font-size: large;
+  
+            &:hover {
+              color: #495f41;
+            }
+          }
+        }
+      }
+    }
+  
+    /* Mobile navigation */
+    .mobile-nav {
+      display: none;
+  
+      @media (max-width: 550px) {
+        display: flex;
+        padding: 10px;
+  
+        .menu-icon {
+          width: 34px;
+          height: 34px;
+          cursor: pointer;
+          color: white;
+          display: flex;
+        }
+  
+        /* Drawer for mobile view */
+        .drawer {
+          position: absolute;
+          top: 64px;
+          right: 0;
+          left: 0;
+          background-color: #000;
+          z-index: 10;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          transition: all 0.7s;
+  
+          &.open {
+            transform: translateY(0);
+          }
+  
+          &.close {
+            transform: translateY(-100vh);
+          }
+  
+          .mobile-links {
+            list-style: none;
+            padding: 10px;
+            color: white;
+  
+            .mobile-link {
+              padding: 10px;
+  
+              a {
+                color: white;
+                text-decoration: none;
+  
+                &:hover {
+                  color: #495f41;
+                }
+              }
+  
+              p {
+                font-size: 16px;
+                color: white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
